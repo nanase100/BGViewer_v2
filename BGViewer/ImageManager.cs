@@ -58,7 +58,7 @@ namespace GraphicViewer
 		//-----------------------------------------------------------------------------------
 		//
 		//-----------------------------------------------------------------------------------
-		static bool dummy()
+		static bool Dummy()
 		{
 			return false; // このメソッドの内容は何でもよい
 		}
@@ -84,7 +84,6 @@ namespace GraphicViewer
 			//差分化が必要かのチェックと前準備
 			if( baseName.IndexOf(",") != -1 && baseName.IndexOf("hg3") != -1 )
 			{
-				
 				//イベントCGと思われる場合の画像名変更
 				if(baseName.IndexOf("ev_") != -1 || baseName.IndexOf("cg_") != -1 )
 				{

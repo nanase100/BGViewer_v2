@@ -88,6 +88,8 @@ namespace GraphicViewer
 
 		public bool					m_CCPFlg			{ set; get; }			//立ち絵でキャラ-服装-ポーズの
 
+
+
 		public GenreTree()
 		{
 			m_childGenre = new HashSet<GenreTree>();
@@ -522,14 +524,13 @@ namespace GraphicViewer
 			Regex regGenreRect					= new Regex("\t*※(.*):(.*):(.*):(.*)](.*)");												 //ジャンル名, 顔座標x, y, w, h		
 			Regex regGenreStrColor				= new Regex("\t*※(.*):#(..)(..)(..)");														 //ジャンル名, 文字色(#000000)
 			Regex regGenreRectColorExpand		= new Regex("\t*※(.*):(.*):(.*):(.*):(.*):#(..)(..)(..):(.*):(.*)");				  //ジャンル名, 顔座標x, y, w, h, 文字色(#000000), ツリーを開いておくフラグ, 大型サムネイル使用するか
-			Regex regGenreRectColorExpandPlus	= new Regex("\t*※(.*):(.*):(.*):(.*):(.*):#(..)(..)(..):(.*):(.*):(.*)");			//ジャンル名, 顔座標x, y, w, h, 文字色(#000000), ツリーを開いておくフラグ, 大型サムネイル使用するか、CCP構造を利用するか
+			Regex regGenreRectColorExpandPlus	= new Regex("\t*※(.*):(.*):(.*):(.*):(.*):#(..)(..)(..):(.*):(.*):(.*):(.*)");			//ジャンル名, 顔座標x, y, w, h, 文字色(#000000), ツリーを開いておくフラグ, 大型サムネイル使用するか、CCP構造を利用するか、サブサムネサイズを使用するか
 
 			Regex regGenreSeparator = new Regex("\t*_※(.*)");
 
 			Rectangle faceRect;
 			Match matchResult, matchResult2, matchResult3, matchResult4;
 			DataSet tmpData = null;
-
 
 			//フォルダ階層の開閉マークの「※」と「_※」の数一致を調べるよう
 			int openMarkCount = 0;
@@ -648,12 +649,17 @@ namespace GraphicViewer
 
 								int isUseBig = 0;
 								bool isCCPFlg = false;
+								bool isUseSubThumSize = false;
 
 								//ジャンルツリー
 								if (matchType == 1 || matchType == 3 ) isUseBig = int.Parse(matchResult.Groups[10].Value);
-								if (matchType == 3) isCCPFlg = (matchResult.Groups[11].Value == "1" ? true : false);
+								if (matchType == 3)
+								{
+									isCCPFlg			= (matchResult.Groups[11].Value == "1" ? true : false);
+									isUseSubThumSize	= (matchResult.Groups[12].Value == "1" ? true : false);
+								}
 
-								tmpGenreItme = new GenreTree(nowGenre, nowTotalGenreSplit, paerentGenreItem, R, G, B, isAutoExpand, isUseBig, isCCPFlg);
+								tmpGenreItme = new GenreTree(nowGenre, nowTotalGenreSplit, paerentGenreItem, R, G, B, isAutoExpand, isUseBig, isCCPFlg, isUseSubThumSize);
 
 							openMarkCount++;
 

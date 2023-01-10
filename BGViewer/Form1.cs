@@ -84,6 +84,8 @@ namespace GraphicViewer
 		public int				m_bigPicPosY		= 0;			   //アクティブなジャンルセットに大型立ち絵データを含む枚数。
 		public List<DataSet>	m_activeDataSet		 = new List<DataSet>();
 
+		public bool				m_isUseSubThumSize	= false;
+
 		public bool				m_isPreTabDragDrop = false;
 		public	bool			m_isTabDragDrop		= false;
 		public int				m_tabDragDropS_ID	= -1;
@@ -494,8 +496,8 @@ namespace GraphicViewer
 				// スクロール量（方向）の表示	
 				if (vScrollBar1.Enabled == false) return;
 
-				if (newScrollValue >= vScrollBar1.Maximum-vScrollBar1.LargeChange)  newScrollValue = vScrollBar1.Maximum - vScrollBar1.LargeChange;
-				if (newScrollValue <= vScrollBar1.Minimum)						  newScrollValue = vScrollBar1.Minimum;
+				if (newScrollValue >= vScrollBar1.Maximum-vScrollBar1.LargeChange)	newScrollValue = vScrollBar1.Maximum - vScrollBar1.LargeChange;
+				if (newScrollValue <= vScrollBar1.Minimum)							newScrollValue = vScrollBar1.Minimum;
 
 				vScrollBar1.Value = newScrollValue;
 				m_tabInfo[m_activeTabNo].m_scrollPos = newScrollValue;
@@ -542,8 +544,6 @@ namespace GraphicViewer
 			if(m_tabInfo[itemIndex].m_colorIndex < 0) m_tabInfo[itemIndex].m_colorIndex = m_colorPalette.Count() - 1;
 
 			if (m_tabInfo[itemIndex].m_colorIndex >= m_colorPalette.Count() ) m_tabInfo[itemIndex].m_colorIndex = 0;
-
-			//tabControl1.SelectedTab.ForeColor = Color.Tomato;
 
 			tabControl1.Invalidate();
 			
@@ -647,19 +647,16 @@ namespace GraphicViewer
 
 			g.FillRectangle( Brushes.Black, 0, 0, pictureBox1.Width, pictureBox1.Height );
 
-			
 			int				posX			= 0;
 			int				posY			= -vScrollBar1.Value;
 			int				summaryPosY		= 0;
-			Font			tmpFont			= new Font("Meiryo", m_summaryFontSize);
-			StringFormat	sf				= new StringFormat();
+			
+			
 			Brush			b				= new SolidBrush(Color.FromArgb(128, Color.Black));
 			bool			alreadyLF		= false;		//自動改行と手動改行が重ならない用のフラグ
 			int				offsetX			= 0;
 			int				loopYCount		= 0;
 			string			totalParentName = "";
-			
-
 			TreeNode		tmpNode			= treeView1.SelectedNode.Parent;
 
 			//階層を上に登りつつ名前を結合して最終的な名前にしていく
@@ -675,6 +672,9 @@ namespace GraphicViewer
 			string		exGenre = "";
 
 			m_bigPicCount	= 0;
+
+			m_isUseSubThumSize = m_dataManager.m_genreTreeByGenreName[nowGenre].m_isUseSubThumbSize;
+
 			m_activeDataSet.Clear();
 
 			if( m_dataManager.m_genreTreeByGenreName[nowGenre].m_CCPFlg ) 
@@ -701,12 +701,14 @@ namespace GraphicViewer
 				{
 					m_activeDataSet.Add( tmpData );
 				}
-
 			}
 
 			int count = 0;
 
 			try {
+
+				int workHeight = (m_isUseSubThumSize? m_subThumbnailHeight:m_thumbnailHeight);
+				int workWidth = (m_isUseSubThumSize?  m_subThumbnailWidth:m_thumbnailWidth);
 
 				string	preGenre	= "";
 				
@@ -715,7 +717,7 @@ namespace GraphicViewer
 				foreach (DataSet tmpData in m_activeDataSet )
 				{
 					//クリッピングチェック
-					if (loopYCount * m_thumbnailHeight + m_thumbnailHeight > vScrollBar1.Value || loopYCount * m_thumbnailHeight < vScrollBar1.Value + pictureBox1.Height)
+					if (loopYCount * workHeight + workHeight > vScrollBar1.Value || loopYCount * workHeight < vScrollBar1.Value + pictureBox1.Height)
 					{
 						
 						//大型サムネイルかどうか
@@ -725,8 +727,8 @@ namespace GraphicViewer
 							if ( ( (m_dataManager.m_genreTreeByGenreName[nowGenre].m_CCPFlg && preGenre != tmpData.m_genre && preGenre != "")) && alreadyLF == false )
 							{
 								posX			= 0;
-								posY			+= m_thumbnailHeight;
-								drawAllHeight	+= m_thumbnailHeight;
+								posY			+= workHeight;
+								drawAllHeight	+= workHeight;
 								loopYCount++;
 							}
 
@@ -734,41 +736,43 @@ namespace GraphicViewer
 							
 							if (m_imgManager.m_imageDictionary.ContainsKey(tmpData.m_fileName) == false)
 							{
-								m_imgManager.LoadImage(tmpData, m_thumbnailWidth, m_thumbnailHeight, m_dataManager.m_faceRectByGenre);
-	//							if(tmpData.m_useBig == false)		m_imgManager.LoadImage(tmpData, m_thumbnailWidth, m_thumbnailHeight, m_dataManager.m_faceRectByGenre);
-//								else								m_imgManager.LoadImage(tmpData, m_dataManager.m_bigThumbnailWidth, m_dataManager.m_bigThumbnailHeight);
+								m_imgManager.LoadImage(tmpData, workWidth, workHeight, m_dataManager.m_faceRectByGenre);;
 							}
 
 							m_activeDataSet[count].m_x = offsetX + posX;
 							m_activeDataSet[count].m_y = posY;
-							g.DrawImage(m_imgManager.m_imageDictionary[tmpData.m_fileName].thmbnailImage, offsetX + posX, posY, m_thumbnailWidth, m_thumbnailHeight);
+							g.DrawImage(m_imgManager.m_imageDictionary[tmpData.m_fileName].thmbnailImage, offsetX + posX, posY, workWidth, workHeight);
 
 
 							//----サムネイル説明分の表示
 							if (menuItemSub2.Checked == true)
 							{
+								Font tmpFont		= new Font("Meiryo", m_summaryFontSize);
 								string tmpStr		= tmpData.m_summary.Replace( "改行", "" );
 								tmpStr				= tmpStr.Replace("立ち絵データ", "");
+								StringFormat sf		= new StringFormat();
 
-								SizeF stringSize	= g.MeasureString( tmpStr, tmpFont, m_thumbnailWidth, sf);
-								summaryPosY			= posY + m_thumbnailHeight - (int)stringSize.Height;
+								SizeF stringSize	= g.MeasureString( tmpStr, tmpFont,	workWidth, sf);
+								summaryPosY			= posY + workHeight - (int)stringSize.Height;
 
 								g.FillRectangle(b, posX + offsetX, summaryPosY, stringSize.Width, stringSize.Height);
 
 								Brush drawBrus		= new SolidBrush( tmpData.m_summaryColor );
 
-								g.DrawString( tmpStr, tmpFont, drawBrus, new Rectangle(offsetX + posX, summaryPosY, m_thumbnailWidth, m_thumbnailHeight), sf);
+								g.DrawString( tmpStr, tmpFont, drawBrus, new Rectangle(offsetX + posX, summaryPosY, workWidth, workHeight), sf);
+
+								tmpFont.Dispose();
 							}
 
-							posX = (posX + m_thumbnailWidth);
+							posX = (posX + workWidth);
 
 							//サムネイル改行
-							if ( offsetX + posX + m_thumbnailWidth > pictureBox1.Width || tmpData.m_isLineFeed  )
+							if ( offsetX + posX + workWidth > pictureBox1.Width || tmpData.m_isLineFeed  )
 							{
 								loopYCount++;
 								posX			= 0;
-								posY			+= m_thumbnailHeight;
-								drawAllHeight	+= m_thumbnailHeight;
+								posY			+= workHeight;
+								drawAllHeight	+= workHeight;
 								alreadyLF		= true;
 							}
 							else
@@ -799,7 +803,7 @@ namespace GraphicViewer
 				System.Windows.Forms.MessageBox.Show("画像名の指定ミスなどにより、画像がない、正しくないものがあります。\nそのためこの項目は表示がされません。\n修正を行う場合は\"graphic.txt\"を確認してください。");
 			}
 
-			tmpFont.Dispose();
+			
 			b.Dispose();
 			g.Dispose();
 			
@@ -817,9 +821,11 @@ namespace GraphicViewer
 				int	 panelCount = m_activeDataSet.Count;
 				int	 offsetX	= 0;
 
+				int workHeight = (m_isUseSubThumSize?m_subThumbnailHeight : m_thumbnailHeight);
+
 				if( m_bigPicCount > 0)		offsetX = m_dataManager.m_bigThumbnailWidth;
 				
-				int totalHeight = drawAllHeight + m_thumbnailHeight;
+				int totalHeight = drawAllHeight + workHeight;
 
 				if (totalHeight >= pictureBox1.Height)
 				{	
@@ -954,12 +960,15 @@ namespace GraphicViewer
 			int				panelNo				= 0;
 			int				scrollPosY			= vScrollBar1.Value;
 			TreeNode		tmpNode				= treeView1.SelectedNode.Parent;
+
+			int workHeight = (m_isUseSubThumSize? m_subThumbnailHeight : m_thumbnailHeight);
+			int workWidth = (m_isUseSubThumSize? m_subThumbnailWidth : m_thumbnailWidth);
 		
 			//クリックした位置から何番目の画像を選んだか割り出す。改行コードがある場合、ずれるので計算だけではだめ
 			
 			foreach (DataSet tmpData in m_activeDataSet )
 			{
-				if( tmpData.m_x <= e.X && e.X <= tmpData.m_x+m_thumbnailWidth && tmpData.m_y <= e.Y && e.Y <= tmpData.m_y+m_thumbnailHeight )
+				if( tmpData.m_x <= e.X && e.X <= tmpData.m_x+workWidth && tmpData.m_y <= e.Y && e.Y <= tmpData.m_y+workHeight )
 				{
 					break;
 				}

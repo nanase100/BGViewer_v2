@@ -136,13 +136,11 @@ namespace GraphicViewer
 			if( isDiff )
 			{
 				Bitmap diffTmpeBMP = new Bitmap(diffImage);
-				//g.DrawImage(diffImage, 0, 0, diffImage.Width, diffImage.Height);
 				
 				var offsetPos = m_pParentForm1.m_imgManager.GetDiffOffsetPos(diffName);
 				var offsetPosBase = m_pParentForm1.m_imgManager.GetDiffOffsetPos(baseName);
 				offsetPos.x -= offsetPosBase.x;
 				offsetPos.y -= offsetPosBase.y;
-				
 				
 				diffTmpeBMP.MakeTransparent(Color.Lime);
 				g.DrawImage(diffTmpeBMP, offsetPos.x, offsetPos.y, diffImage.Width, diffImage.Height);
