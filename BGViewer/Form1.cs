@@ -159,7 +159,7 @@ namespace GraphicViewer
 			foreach( var tmp in m_tabList )
 			{
 				if(tmp == null )continue;
-				m_dataManager.m_tabBackupDat.Add( new TabBackupDat(tmp.FullPath, m_tabInfo[i].m_tabOpValue, m_tabInfo[i].m_tabOpValue2, m_tabInfo[i].m_tabOpValue3, m_tabInfo[i].m_tabOpValue4, m_tabInfo[i].m_tabOpCopyID, m_tabInfo[i].m_tabCCPNo,  m_preSelectSubCopyNo[i], m_tabInfo[i].m_color, m_tabInfo[i].m_childIndexList.ToArray()) );
+				m_dataManager.m_tabBackupDat.Add( new TabBackupDat(tmp.FullPath, m_tabInfo[i].m_tabOpValue, m_tabInfo[i].m_tabOpValue2, m_tabInfo[i].m_tabOpValue3, m_tabInfo[i].m_tabOpValue4, m_tabInfo[i].m_tabOpCopyID, m_tabInfo[i].m_tabCCPNo,  m_preSelectSubCopyNo[i], m_tabInfo[i].m_color, m_tabInfo[i].m_strColor, m_tabInfo[i].m_childIndexList.ToArray()) );
 				i++;
 			}
 
@@ -289,7 +289,7 @@ namespace GraphicViewer
 				if(treeView1.SelectedNode == null ) continue;
 				AddTab();
 				m_preSelectSubCopyNo[i] = tmp.m_preSelectBank;
-				m_tabInfo[i].SetVal(tmp.m_Opt1No,tmp.m_Opt2No, tmp.m_Opt3No, tmp.m_Opt4No, tmp.m_CopyNo, tmp.m_CCPNo, tmp.m_color, tmp.m_childList.ToArray());
+				m_tabInfo[i].SetVal(tmp.m_Opt1No,tmp.m_Opt2No, tmp.m_Opt3No, tmp.m_Opt4No, tmp.m_CopyNo, tmp.m_CCPNo, tmp.m_color, tmp.m_strColor, tmp.m_childList.ToArray());
 
 				i++;
 			}
@@ -560,12 +560,21 @@ namespace GraphicViewer
 			0x33, 0x66, 0x99, 0xCC, 0x3300, 0x3333,
 			0x3366, 0x3399, 0x33CC, 0x6600, 0x6633,
 			0x6666, 0x6699, 0x66CC, 0x9900, 0x9933};
-
+		
 		//ダイアログを表示する
 		if (cd.ShowDialog() == DialogResult.OK)
 		{
 			//選択された色の取得
-			m_tabInfo[itemIndex].m_color = cd.Color;
+//			m_tabInfo[itemIndex].m_color = cd.Color;
+			
+			if (newScrollValue < 0)
+			{
+				m_tabInfo[itemIndex].m_color = cd.Color;
+			}
+			else
+			{
+				m_tabInfo[itemIndex].m_strColor = cd.Color;
+			}
 		}
 
 			tabControl1.Invalidate();
@@ -622,7 +631,7 @@ namespace GraphicViewer
 			m_nodeStateWList.Add( new List<bool>() );
 			StockNodesState(m_nodeStateWList.Count-1);
 
-			m_tabInfo.Add( new CTabStatusInfo(m_selectOptionStringNo, m_selectOptionStringNo2, m_selectOptionStringNo3, m_selectOptionStringNo4,0,0, Color.White));
+			m_tabInfo.Add( new CTabStatusInfo(m_selectOptionStringNo, m_selectOptionStringNo2, m_selectOptionStringNo3, m_selectOptionStringNo4,0,0, Color.White, Color.Black));
 			m_preSelectSubCopyNo.Add(-1);
 
 			if (treeView1.Nodes.Count > 0)
@@ -1696,8 +1705,6 @@ namespace GraphicViewer
 				case Keys.F3:	ShowNextTab();	break;
 				case Keys.F4:	ShowPreTab();	break;
 					
-				
-
 			}
 		}
 
@@ -1716,12 +1723,11 @@ namespace GraphicViewer
 			}
 		}
 
-		
 
 		/// <summary>
 		/// タブの追加
 		/// </summary>
-		private void AddTab( int optStr1No =-1, int optStr2No = -1, int optStr3No = -1, int optStr4No = -1, int copyStrNo = -1, int ccpNo = -1, Color color = default(Color) )
+		private void AddTab( int optStr1No =-1, int optStr2No = -1, int optStr3No = -1, int optStr4No = -1, int copyStrNo = -1, int ccpNo = -1)
 		{
 			if (treeView1.SelectedNode != null)
 			{
@@ -1733,14 +1739,17 @@ namespace GraphicViewer
 				if(copyStrNo == -1) copyStrNo	= comboBox1.SelectedIndex;
 				if(ccpNo == -1)		ccpNo		= comboBox2.SelectedIndex;
 
-				m_tabInfo.Add( new CTabStatusInfo(optStr1No, optStr2No, optStr3No, optStr4No, copyStrNo, ccpNo, color ) );
+				Color color = Color.Transparent;
+				Color strColor = Color.Black;
+
+				m_tabInfo.Add( new CTabStatusInfo(optStr1No, optStr2No, optStr3No, optStr4No, copyStrNo, ccpNo, color,strColor ) );
 
 				m_tabList.Add(treeView1.SelectedNode);
 				tabControl1.TabPages.Add(treeView1.SelectedNode.Text);
 
 				tabControl1.SelectedIndex = tabControl1.TabPages.Count - 1;
 
-
+				
 				//タブ追加時のタブ名。
 				UpdateTabName();
 
@@ -2673,8 +2682,9 @@ namespace GraphicViewer
 			//タブのテキストと背景を描画するためのブラシを決定する
 			//Brush foreBrush, backBrush;
 			SolidBrush  backBrush;
+			SolidBrush  foreBrush;
 			
-			int colorIndex = 0;
+			
 			
 			//if(m_tabInfo.Count > e.Index ) colorIndex = m_tabInfo[e.Index].m_colorIndex;
 
@@ -2682,8 +2692,8 @@ namespace GraphicViewer
 			{
 				//選択されているタブのテキストを赤、背景を青とする
 				//foreBrush = ( colorIndex==0?Brushes.Black: Brushes.White);
-
 				//backBrush = m_colorPalette[colorIndex];
+				foreBrush = new SolidBrush(m_tabInfo[e.Index].m_strColor);
 				backBrush = new SolidBrush(m_tabInfo[e.Index].m_color);
 			}
 			else
@@ -2692,6 +2702,8 @@ namespace GraphicViewer
 				//foreBrush = (colorIndex == 0 ? Brushes.Black : Brushes.White);
 
 				//backBrush = m_colorPalette[colorIndex];
+
+				foreBrush = new SolidBrush(m_tabInfo[e.Index].m_strColor);
 				backBrush = new SolidBrush(m_tabInfo[e.Index].m_color);
 			}
 
@@ -2704,7 +2716,7 @@ namespace GraphicViewer
 			//背景の描画
 			e.Graphics.FillRectangle(backBrush, e.Bounds);
 			//Textの描画
-			e.Graphics.DrawString(txt, e.Font, Brushes.Black, e.Bounds, sf);
+			e.Graphics.DrawString(txt, e.Font, foreBrush, e.Bounds, sf);
 		}
 
 	}
@@ -2728,6 +2740,8 @@ namespace GraphicViewer
 
 		//public int m_colorIndex;
 		public Color m_color;
+		public Color m_strColor;
+
 
 		
 		//フォルダ機能のための変数
@@ -2745,15 +2759,15 @@ namespace GraphicViewer
 
 		public int m_scrollPos;
 
-		public CTabStatusInfo(int tabOpValue, int tabOpValue2, int tabOpValue3, int tabOpValue4, int tabOpCopyID, int tabCCPNo, Color  color, params int[] child )
+		public CTabStatusInfo(int tabOpValue, int tabOpValue2, int tabOpValue3, int tabOpValue4, int tabOpCopyID, int tabCCPNo, Color  color, Color strColor, params int[] child )
 		{
-			SetVal(tabOpValue, tabOpValue2, tabOpValue3, tabOpValue4, tabOpCopyID, tabCCPNo, color, child );
+			SetVal(tabOpValue, tabOpValue2, tabOpValue3, tabOpValue4, tabOpCopyID, tabCCPNo, color, strColor, child );
 
 			isDirOpen	= true;
 
 			m_scrollPos = 0;
 		}
-		public void SetVal(int tabOpValue, int tabOpValue2, int tabOpValue3, int tabOpValue4, int tabOpCopyID, int tabCCPNo, Color color, params int[] child)
+		public void SetVal(int tabOpValue, int tabOpValue2, int tabOpValue3, int tabOpValue4, int tabOpCopyID, int tabCCPNo, Color color,Color strColor, params int[] child)
 		{
 			m_tabOpValue	= tabOpValue;
 			m_tabOpValue2	= tabOpValue2;
@@ -2763,6 +2777,7 @@ namespace GraphicViewer
 			m_tabCCPNo		= tabCCPNo;
 
 			m_color = color;
+			m_strColor = strColor;
 
 			foreach( var tmp in child)
 			{

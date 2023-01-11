@@ -135,12 +135,13 @@ namespace GraphicViewer
 		public int m_preSelectBank		{ set; get; }
 		public int m_CopyNo				{ set; get; }
 		public int m_CCPNo				{ set; get; }
-		//public int m_colorIndex			{ set; get; }
-		public	Color m_color  { set; get; }
+		//public int m_colorIndex		{ set; get; }
+		public	Color m_color			{ set; get; }
+		public	Color m_strColor		{ set; get; }
 
 		public List<int>	m_childList	{ set;get; } = new List<int>();
 
-		public TabBackupDat(string tabName, int opt1No, int opt2No, int opt3No, int opt4No, int copyNo, int ccpNo, int preSelectBank, Color color, params int[] child )
+		public TabBackupDat(string tabName, int opt1No, int opt2No, int opt3No, int opt4No, int copyNo, int ccpNo, int preSelectBank, Color color, Color strColor, params int[] child )
 		{
 			m_tabName		= tabName;
 			m_Opt1No		= opt1No;
@@ -151,8 +152,8 @@ namespace GraphicViewer
 			m_CCPNo			= ccpNo;
 			m_preSelectBank = preSelectBank;
 			//m_colorIndex	= colorIndex;
-			m_color = color;
-
+			m_color			= color;
+			m_strColor		= strColor;
 			foreach( var tmp in child)
 			{
 				m_childList.Add( tmp );
@@ -382,8 +383,9 @@ namespace GraphicViewer
 				////タブバックアップの取得
 				foreach (var data in jsonData.タブ履歴)
 				{
-					Color color = ColorTranslator.FromHtml(data.タブ色);
-					m_tabBackupDat.Add(new TabBackupDat(data.タブ名, data.オプション[0], data.オプション[1], data.オプション[2], data.オプション[3], data.オプション[4], data.オプション[5], data.オプション[6],color, data.チャイルド.ToArray()));
+					Color color		= ColorTranslator.FromHtml(data.タブ色);
+					Color strColor	= ColorTranslator.FromHtml(data.タブ文字色);
+					m_tabBackupDat.Add(new TabBackupDat(data.タブ名, data.オプション[0], data.オプション[1], data.オプション[2], data.オプション[3], data.オプション[4], data.オプション[5], data.オプション[6],color,strColor, data.チャイルド.ToArray()));
 				}
 
 				m_showTabLv			= jsonData.タブ名固定階層;
@@ -420,7 +422,6 @@ namespace GraphicViewer
 
 			jsonData.サブサムネイルサイズ[0] = m_subThumbnailWidth;
 			jsonData.サブサムネイルサイズ[1] = m_subThumbnailHeight;
-
 
 			jsonData.フォントサイズ = m_summaryFontSize;
 
@@ -461,6 +462,7 @@ namespace GraphicViewer
 					data.m_preSelectBank,
 				};
 				tmpData.タブ色 = ColorTranslator.ToHtml(data.m_color);
+				tmpData.タブ文字色 = ColorTranslator.ToHtml(data.m_strColor);
 				tmpData.チャイルド = data.m_childList;
 
 				jsonData.タブ履歴.Add(tmpData);
@@ -1046,6 +1048,7 @@ namespace GraphicViewer
 		public string タブ名 { get; set; }
 		public List<int> オプション { get; set; } = new List<int>();
 		public string タブ色 { get; set; } = "#FFFFFF";
+		public string タブ文字色 { get; set; } = "#000000";
 		public List<int> チャイルド { get; set; } = new List<int>();
 	};
 }
