@@ -34,6 +34,9 @@
 			this.label1 = new System.Windows.Forms.Label();
 			this.comboBox2 = new System.Windows.Forms.ComboBox();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.funcStrCopyBtn3 = new System.Windows.Forms.Button();
+			this.funcStrCopyBtn2 = new System.Windows.Forms.Button();
+			this.funcStrCopyBtn1 = new System.Windows.Forms.Button();
 			this.groupBox5 = new System.Windows.Forms.GroupBox();
 			this.radioButton49 = new System.Windows.Forms.RadioButton();
 			this.radioButton48 = new System.Windows.Forms.RadioButton();
@@ -96,6 +99,7 @@
 			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripTextBox();
 			this.タブ名に表示する最大文字数ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripTextBox();
+			this.ToolStripMenuItemホット数字キー = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
@@ -172,17 +176,50 @@
 			// 
 			this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox2.Controls.Add(this.funcStrCopyBtn3);
+			this.groupBox2.Controls.Add(this.funcStrCopyBtn2);
+			this.groupBox2.Controls.Add(this.funcStrCopyBtn1);
 			this.groupBox2.Controls.Add(this.groupBox5);
 			this.groupBox2.Controls.Add(this.groupBox1);
 			this.groupBox2.Controls.Add(this.groupBox4);
 			this.groupBox2.Controls.Add(this.groupBox3);
 			this.groupBox2.Controls.Add(this.comboBox1);
 			this.groupBox2.Controls.Add(this.textBox3);
-			this.groupBox2.Location = new System.Drawing.Point(7, 496);
+			this.groupBox2.Location = new System.Drawing.Point(7, 449);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(263, 321);
+			this.groupBox2.Size = new System.Drawing.Size(263, 370);
 			this.groupBox2.TabIndex = 27;
 			this.groupBox2.TabStop = false;
+			// 
+			// funcStrCopyBtn3
+			// 
+			this.funcStrCopyBtn3.Location = new System.Drawing.Point(170, 261);
+			this.funcStrCopyBtn3.Name = "funcStrCopyBtn3";
+			this.funcStrCopyBtn3.Size = new System.Drawing.Size(74, 21);
+			this.funcStrCopyBtn3.TabIndex = 34;
+			this.funcStrCopyBtn3.Text = "汎用コビー3";
+			this.funcStrCopyBtn3.UseVisualStyleBackColor = true;
+			this.funcStrCopyBtn3.Click += new System.EventHandler(this.funcStrCopyBtn3_Click);
+			// 
+			// funcStrCopyBtn2
+			// 
+			this.funcStrCopyBtn2.Location = new System.Drawing.Point(88, 261);
+			this.funcStrCopyBtn2.Name = "funcStrCopyBtn2";
+			this.funcStrCopyBtn2.Size = new System.Drawing.Size(74, 21);
+			this.funcStrCopyBtn2.TabIndex = 33;
+			this.funcStrCopyBtn2.Text = "汎用コビー2";
+			this.funcStrCopyBtn2.UseVisualStyleBackColor = true;
+			this.funcStrCopyBtn2.Click += new System.EventHandler(this.funcStrCopyBtn2_Click);
+			// 
+			// funcStrCopyBtn1
+			// 
+			this.funcStrCopyBtn1.Location = new System.Drawing.Point(8, 261);
+			this.funcStrCopyBtn1.Name = "funcStrCopyBtn1";
+			this.funcStrCopyBtn1.Size = new System.Drawing.Size(74, 21);
+			this.funcStrCopyBtn1.TabIndex = 32;
+			this.funcStrCopyBtn1.Text = "汎用コビー1";
+			this.funcStrCopyBtn1.UseVisualStyleBackColor = true;
+			this.funcStrCopyBtn1.Click += new System.EventHandler(this.funcStrCopyBtn1_Click);
 			// 
 			// groupBox5
 			// 
@@ -685,7 +722,7 @@
             "コピー文7",
             "コピー文8",
             "コピー文9"});
-			this.comboBox1.Location = new System.Drawing.Point(6, 261);
+			this.comboBox1.Location = new System.Drawing.Point(8, 288);
 			this.comboBox1.Name = "comboBox1";
 			this.comboBox1.Size = new System.Drawing.Size(245, 20);
 			this.comboBox1.TabIndex = 18;
@@ -696,11 +733,11 @@
 			this.textBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.textBox3.BackColor = System.Drawing.SystemColors.Control;
-			this.textBox3.Location = new System.Drawing.Point(6, 287);
+			this.textBox3.Location = new System.Drawing.Point(6, 314);
 			this.textBox3.Multiline = true;
 			this.textBox3.Name = "textBox3";
 			this.textBox3.ReadOnly = true;
-			this.textBox3.Size = new System.Drawing.Size(251, 28);
+			this.textBox3.Size = new System.Drawing.Size(251, 48);
 			this.textBox3.TabIndex = 7;
 			this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
 			// 
@@ -713,7 +750,7 @@
 			this.treeView1.HideSelection = false;
 			this.treeView1.Location = new System.Drawing.Point(0, 3);
 			this.treeView1.Name = "treeView1";
-			this.treeView1.Size = new System.Drawing.Size(270, 487);
+			this.treeView1.Size = new System.Drawing.Size(270, 440);
 			this.treeView1.TabIndex = 7;
 			this.treeView1.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterExpand);
 			this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
@@ -785,7 +822,8 @@
             this.menuItemSub5,
             this.menuItemSub6,
             this.menuItemSub7,
-            this.ToolStripMenuItem8});
+            this.ToolStripMenuItem8,
+            this.ToolStripMenuItemホット数字キー});
 			this.オプション指定ToolStripMenuItem.Name = "オプション指定ToolStripMenuItem";
 			this.オプション指定ToolStripMenuItem.Size = new System.Drawing.Size(87, 20);
 			this.オプション指定ToolStripMenuItem.Text = "オプション指定";
@@ -794,14 +832,14 @@
 			// 
 			this.menuItemSub1.CheckOnClick = true;
 			this.menuItemSub1.Name = "menuItemSub1";
-			this.menuItemSub1.Size = new System.Drawing.Size(287, 22);
+			this.menuItemSub1.Size = new System.Drawing.Size(297, 22);
 			this.menuItemSub1.Text = "タブ毎に設定を記憶する";
 			// 
 			// menuItemSub2
 			// 
 			this.menuItemSub2.CheckOnClick = true;
 			this.menuItemSub2.Name = "menuItemSub2";
-			this.menuItemSub2.Size = new System.Drawing.Size(287, 22);
+			this.menuItemSub2.Size = new System.Drawing.Size(297, 22);
 			this.menuItemSub2.Text = "サムネイルに説明文を表示する";
 			this.menuItemSub2.Click += new System.EventHandler(this.ToolStripMenuItem_Click);
 			// 
@@ -809,14 +847,14 @@
 			// 
 			this.menuItemSub3.CheckOnClick = true;
 			this.menuItemSub3.Name = "menuItemSub3";
-			this.menuItemSub3.Size = new System.Drawing.Size(287, 22);
+			this.menuItemSub3.Size = new System.Drawing.Size(297, 22);
 			this.menuItemSub3.Text = "コピー時に自動的に秀丸に貼付けを行う";
 			// 
 			// menuItemSub5
 			// 
 			this.menuItemSub5.CheckOnClick = true;
 			this.menuItemSub5.Name = "menuItemSub5";
-			this.menuItemSub5.Size = new System.Drawing.Size(287, 22);
+			this.menuItemSub5.Size = new System.Drawing.Size(297, 22);
 			this.menuItemSub5.Text = "ウインドウを常に一番上に表示する";
 			this.menuItemSub5.Click += new System.EventHandler(this.menuItemSub5_Click);
 			// 
@@ -824,7 +862,7 @@
 			// 
 			this.menuItemSub6.CheckOnClick = true;
 			this.menuItemSub6.Name = "menuItemSub6";
-			this.menuItemSub6.Size = new System.Drawing.Size(287, 22);
+			this.menuItemSub6.Size = new System.Drawing.Size(297, 22);
 			this.menuItemSub6.Text = "拡張置き換えテキスト文を表示する";
 			this.menuItemSub6.Click += new System.EventHandler(this.menuItemSub6_Click);
 			// 
@@ -832,7 +870,7 @@
 			// 
 			this.menuItemSub7.CheckOnClick = true;
 			this.menuItemSub7.Name = "menuItemSub7";
-			this.menuItemSub7.Size = new System.Drawing.Size(287, 22);
+			this.menuItemSub7.Size = new System.Drawing.Size(297, 22);
 			this.menuItemSub7.Text = "タブ毎にツリービューの状態を保持しない";
 			// 
 			// ToolStripMenuItem8
@@ -846,7 +884,7 @@
             this.タブ名に表示する最大文字数ToolStripMenuItem,
             this.toolStripMenuItem3});
 			this.ToolStripMenuItem8.Name = "ToolStripMenuItem8";
-			this.ToolStripMenuItem8.Size = new System.Drawing.Size(287, 22);
+			this.ToolStripMenuItem8.Size = new System.Drawing.Size(297, 22);
 			this.ToolStripMenuItem8.Text = "タブ名を特定の階層優先+最大文字数設定";
 			// 
 			// タブ名に表示する階層ToolStripMenuItem
@@ -875,6 +913,13 @@
 			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
 			this.toolStripMenuItem3.Size = new System.Drawing.Size(240, 23);
 			this.toolStripMenuItem3.Text = "3";
+			// 
+			// ToolStripMenuItemホット数字キー
+			// 
+			this.ToolStripMenuItemホット数字キー.CheckOnClick = true;
+			this.ToolStripMenuItemホット数字キー.Name = "ToolStripMenuItemホット数字キー";
+			this.ToolStripMenuItemホット数字キー.Size = new System.Drawing.Size(297, 22);
+			this.ToolStripMenuItemホット数字キー.Text = "Ctrl+数字キーでのコピーを使用する(要 再起動)";
 			// 
 			// Form1
 			// 
@@ -986,6 +1031,10 @@
 		private System.Windows.Forms.ToolStripTextBox toolStripMenuItem3;
 		private System.Windows.Forms.ToolStripMenuItem タブ名に表示する階層ToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem タブ名に表示する最大文字数ToolStripMenuItem;
+		private System.Windows.Forms.Button funcStrCopyBtn3;
+		private System.Windows.Forms.Button funcStrCopyBtn2;
+		private System.Windows.Forms.Button funcStrCopyBtn1;
+		private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemホット数字キー;
 	}
 }
 

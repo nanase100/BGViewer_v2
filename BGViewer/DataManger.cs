@@ -7,6 +7,8 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.IO;
 using Newtonsoft.Json;
+using System.Windows.Forms.VisualStyles;
+using System.Linq;
 
 namespace GraphicViewer
 
@@ -200,6 +202,8 @@ namespace GraphicViewer
 		public string[] m_optionStringLv3 { set; get; }
 		public string[] m_optionStringLv4 { set; get; }
 
+		public List<string> m_funcString { set; get; } = new List<string>();
+
 		public int m_left { set; get; }
 		public int m_top { set; get; }
 		public int m_width { set; get; }
@@ -249,6 +253,7 @@ namespace GraphicViewer
 			m_optionStringLv3		= new string[10];
 			m_optionStringLv4		= new string[10];
 
+
 			for (int i = 0; i < 10; i++)
 			{
 				m_optionStringLv2[i] = "";
@@ -265,6 +270,7 @@ namespace GraphicViewer
 
 			m_toolOption = new List<int>
 			{
+				0,
 				0,
 				0,
 				0,
@@ -372,6 +378,15 @@ namespace GraphicViewer
 					m_optionStringLv4[i] = m_optionStringLv4[i].Replace("\n", System.Environment.NewLine);
 					m_optionStringLv4[i] = m_optionStringLv4[i].Replace("\t", "	");
 				}
+
+				if( jsonData.汎用コピー文.Count == 0 )
+				{
+					jsonData.汎用コピー文.Add("");
+					jsonData.汎用コピー文.Add("");
+					jsonData.汎用コピー文.Add("");
+				}
+				m_funcString.AddRange(jsonData.汎用コピー文);
+				
 
 				//ツールオプションのon/off
 				for (int i = 0; i < m_toolOption.Count; i++)
@@ -512,7 +527,7 @@ namespace GraphicViewer
 
 			m_genreTreeMaster.Add(tmpGenreItme);
 			m_genreTreeByGenreName[tmpGenreItme.m_genreName] = tmpGenreItme;
-
+			
 			
 
 			int R = 0, G = 0, B = 0;
@@ -908,6 +923,9 @@ namespace GraphicViewer
 		public List<string> 置き換えテキストD { get; set; } = new List<string>();
 		public List<bool> 機能オプションONOFF { get; set; } = new List<bool>();
 
+
+		public List<string> 汎用コピー文 { get; set; } = new List<string>();
+
 		
 		public int グローバル呼び出し機能 { get; set; } = 0;
 		public int タブ名固定階層 { get; set; } = 2;
@@ -1029,6 +1047,7 @@ namespace GraphicViewer
 				機能オプションONOFF.Add(true);
 				機能オプションONOFF.Add(false);
 				機能オプションONOFF.Add(true);
+				機能オプションONOFF.Add(false);
 				機能オプションONOFF.Add(false);
 				機能オプションONOFF.Add(false);
 				機能オプションONOFF.Add(false);

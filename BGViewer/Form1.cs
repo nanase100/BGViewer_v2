@@ -199,6 +199,9 @@ namespace GraphicViewer
 			m_dataManager.m_toolOption[6]		= (menuItemSub7.Checked == true ? 1 : 0);
 			m_dataManager.m_toolOption[7]		= (ToolStripMenuItem8.Checked == true ? 1 : 0);
 
+			m_dataManager.m_toolOption[8]		= (ToolStripMenuItemホット数字キー.Checked == true ? 1 : 0);
+			
+
 			m_dataManager.m_showTabLv			= int.Parse(toolStripMenuItem2.Text);
 			m_dataManager.m_showTabStrCount		= int.Parse(toolStripMenuItem3.Text);
 
@@ -233,7 +236,7 @@ namespace GraphicViewer
 			m_thumbnailWidth					= m_dataManager.m_thumbnailWidth;
 			m_thumbnailHeight					= m_dataManager.m_thumbnailHeight;
 			m_subThumbnailWidth					= m_dataManager.m_subThumbnailWidth;
-			m_subThumbnailHeight					= m_dataManager.m_subThumbnailHeight;
+			m_subThumbnailHeight				= m_dataManager.m_subThumbnailHeight;
 
 			m_summaryFontSize					= m_dataManager.m_summaryFontSize;
 
@@ -276,6 +279,8 @@ namespace GraphicViewer
 
 			this.TopMost =			(m_dataManager.m_toolOption[4] == 1 ? true : false );
 
+			ToolStripMenuItemホット数字キー.Checked = (m_dataManager.m_toolOption[8] == 1 ? true : false );
+
 
 			toolStripMenuItem2.Text	= m_dataManager.m_showTabLv.ToString();
 			toolStripMenuItem3.Text = m_dataManager.m_showTabStrCount.ToString();
@@ -308,17 +313,20 @@ namespace GraphicViewer
 				toolStripMenuItem3.Text = m_dataManager.m_showTabStrCount.ToString();
 			}
 
-			m_hotKey[0] = new HotKey( MOD_KEY.CONTROL,Keys.D1, HotkeyOpenPanel_01 );
-			m_hotKey[1] = new HotKey( MOD_KEY.CONTROL,Keys.D2, HotkeyOpenPanel_02 );
-			m_hotKey[2] = new HotKey( MOD_KEY.CONTROL,Keys.D3, HotkeyOpenPanel_03 );
-			m_hotKey[3] = new HotKey( MOD_KEY.CONTROL,Keys.D4, HotkeyOpenPanel_04 );
-			m_hotKey[4] = new HotKey( MOD_KEY.CONTROL,Keys.D5, HotkeyOpenPanel_05 );
-			m_hotKey[5] = new HotKey( MOD_KEY.CONTROL,Keys.D6, HotkeyOpenPanel_06 );
-			m_hotKey[6] = new HotKey( MOD_KEY.CONTROL,Keys.D7, HotkeyOpenPanel_07 );
-			m_hotKey[7] = new HotKey( MOD_KEY.CONTROL,Keys.D8, HotkeyOpenPanel_08 );
-			m_hotKey[8] = new HotKey( MOD_KEY.CONTROL,Keys.D9, HotkeyOpenPanel_09 );
-	//		hotKey.Dispose();
-		//	hotKey = new HotKey(0,Keys.F11, openScript );
+			if( m_dataManager.m_toolOption[8] == 1 )
+			{
+				m_hotKey[0] = new HotKey( MOD_KEY.CONTROL,Keys.D1, HotkeyOpenPanel_01 );
+				m_hotKey[1] = new HotKey( MOD_KEY.CONTROL,Keys.D2, HotkeyOpenPanel_02 );
+				m_hotKey[2] = new HotKey( MOD_KEY.CONTROL,Keys.D3, HotkeyOpenPanel_03 );
+				m_hotKey[3] = new HotKey( MOD_KEY.CONTROL,Keys.D4, HotkeyOpenPanel_04 );
+				m_hotKey[4] = new HotKey( MOD_KEY.CONTROL,Keys.D5, HotkeyOpenPanel_05 );
+				m_hotKey[5] = new HotKey( MOD_KEY.CONTROL,Keys.D6, HotkeyOpenPanel_06 );
+				m_hotKey[6] = new HotKey( MOD_KEY.CONTROL,Keys.D7, HotkeyOpenPanel_07 );
+				m_hotKey[7] = new HotKey( MOD_KEY.CONTROL,Keys.D8, HotkeyOpenPanel_08 );
+				m_hotKey[8] = new HotKey( MOD_KEY.CONTROL,Keys.D9, HotkeyOpenPanel_09 );
+				//		hotKey.Dispose();
+				//	hotKey = new HotKey(0,Keys.F11, openScript );
+			}
 			
 			LoadTabChild();
 			UpdateTabNameAll();
@@ -768,7 +776,15 @@ namespace GraphicViewer
 							
 							if (m_imgManager.m_imageDictionary.ContainsKey(tmpData.m_fileName) == false)
 							{
-								m_imgManager.LoadImage(tmpData, workWidth, workHeight, m_dataManager.m_faceRectByGenre);;
+								if(  tmpData.m_useBig == false)
+								{ 
+									m_imgManager.LoadImage(tmpData, workWidth, workHeight, m_dataManager.m_faceRectByGenre);
+								}
+								else
+								{
+									
+									m_imgManager.LoadImage(tmpData, m_dataManager.m_bigThumbnailWidth, m_dataManager.m_bigThumbnailHeight);
+								}
 							}
 
 							m_activeDataSet[count].m_x = offsetX + posX;
@@ -1050,6 +1066,9 @@ namespace GraphicViewer
 
 				//Ctrlキーを押しながら右クリック、または中クリックでファイル名のみ取得のインスタントコピーになる
 				//if ((Control.ModifierKeys & Keys.Control) == Keys.Control || buttonType == 2 )　copyString = "(1)";
+				if ( buttonType == 2 )
+					copyString =  System.IO.Path.GetFileNameWithoutExtension(m_activeDataSet[panelNo].m_fileName);
+
 
 				//結合コピー。キーを押しながらコピーすると、クリップボードに改行とともに追記していくくスタイル
 				if ((Control.ModifierKeys & Keys.Alt) == Keys.Alt)
@@ -1526,9 +1545,10 @@ namespace GraphicViewer
 		/// <param name="keyCode"></param>
 		private void KeyShortCutProc( System.Windows.Forms.Keys keyCode )
 		{
+
+
 			switch( keyCode )
 			{
-
 				case Keys.D1:
 					if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift) radioButton30.Checked = true;
 					else radioButton1.Checked = true;
@@ -1948,6 +1968,7 @@ namespace GraphicViewer
 			if( menuItemSub1.Checked == false )	return;
 
 			//m_receiveFlg = true;
+			//m_tmpReceive = true;
 
 			comboBox1.SelectedIndex = m_tabInfo[index].m_tabOpCopyID;
 
@@ -2006,6 +2027,7 @@ namespace GraphicViewer
 			DoPaint();
 
 			//m_receiveFlg = false;
+			//m_tmpReceive = false;
 			if( comboBox2.Items.Count > m_tabInfo[index].m_tabCCPNo && m_tabInfo[index].m_tabCCPNo != -1 ) comboBox2.SelectedIndex = m_tabInfo[index].m_tabCCPNo;
 		}
 
@@ -2534,6 +2556,40 @@ namespace GraphicViewer
 
 		}
 
+		private void funcStrCopyBtn1_Click(object sender, EventArgs e)
+		{
+
+			Clipboard.SetText( SetClipboadFuncStr(0) );
+			this.SendHidemaru();
+		}
+
+		private void funcStrCopyBtn2_Click(object sender, EventArgs e)
+		{
+			Clipboard.SetText( SetClipboadFuncStr(1) );
+			this.SendHidemaru();
+		}
+
+		private void funcStrCopyBtn3_Click(object sender, EventArgs e)
+		{
+			Clipboard.SetText( SetClipboadFuncStr(2) );
+			this.SendHidemaru();
+		}
+
+		private string SetClipboadFuncStr(int id)
+		{
+			string ret = m_dataManager.m_funcString[id];
+			
+			ret = ret.Replace(  @"\t", "	");
+			ret = ret.Replace(  @"\n", System.Environment.NewLine );
+
+			//ret =ret.Replace("(1)",textBox1.Text);
+			//ret =ret.Replace("(2)",textBox2.Text);
+			//ret =ret.Replace("(3)",textBox4.Text);
+			//ret =ret.Replace("(4)",textBox5.Text);
+
+			return ret;
+		}
+
 		public void TabOpenClose( int index )
 		{
 			if( m_tabInfo[index].IsParent() == false ) return;
@@ -2645,19 +2701,19 @@ namespace GraphicViewer
 
 			if ( isShow )
 			{
-				treeView1.Height = this.Height-460;
-				groupBox2.Height = 321;
-				groupBox2.Top = this.Height-450;
-				comboBox1.Top = 261;
-				textBox3.Top = 287;
+				treeView1.Height = this.Height-510;
+				groupBox2.Height = 370;
+				groupBox2.Top = this.Height-500;
+				comboBox1.Top = 290;
+				textBox3.Top = 320;
 			}
 			else
 			{
-				treeView1.Height = this.Height - 340;
-				groupBox2.Height = 200;
-				groupBox2.Top = this.Height - 330;
+				treeView1.Height = this.Height - 370;
+				groupBox2.Height = 230;
+				groupBox2.Top = this.Height - 360;
 				comboBox1.Top = 140;
-				textBox3.Top = 167;
+				textBox3.Top = 170;
 			}
 		}
 		private void menuItemSub6_Click(object sender, EventArgs e)
