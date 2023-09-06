@@ -208,6 +208,22 @@ namespace GraphicViewer
 			m_dataManager.SettingSave("option.txt");
 
 			for( i = 0; i < m_hotKey.Length; i++ ) if(m_hotKey[i] != null ) m_hotKey[i].Dispose();
+
+			//タブの開閉状態保持
+			StockNodesState(tabControl1.SelectedIndex);
+			using( var tabInfoFile = new System.IO.StreamWriter("tabOption.txt"))
+			{
+				string buff ="";
+				foreach( var tmp in m_nodeStateWList )
+				{
+					buff ="";
+					foreach( var tmp2 in tmp )
+					{
+						buff += (tmp2==true?"1":"0");
+					}
+					tabInfoFile.WriteLine(buff);
+				}
+			}
 		}
 
 		
@@ -330,6 +346,31 @@ namespace GraphicViewer
 			
 			LoadTabChild();
 			UpdateTabNameAll();
+
+
+
+			//タブの開閉状態復帰
+			if( File.Exists("tabOption.txt"))
+			{
+				using( var tabInfoFile = new System.IO.StreamReader("tabOption.txt"))
+				{
+					int tabNo = 0;
+					string buff ="";
+					while (!tabInfoFile.EndOfStream)
+					{
+						var record = tabInfoFile.ReadLine();
+
+						int loopCount = record.Length;
+						for( int l = 0; l < loopCount; l++ )
+						{
+							m_nodeStateWList[tabNo][l] = (record[l]=='1');
+						}
+						tabNo++;
+					
+					}
+				}
+				FlowNodesState(0);
+			}
 		}
 
 
@@ -395,68 +436,7 @@ namespace GraphicViewer
 			ShowGraphic(panelNO,1,true);
 		}
 
-		//未実装機能
-		//cs2のデバッグログなどから現在のスクリプトを探して開こうとしているがこの努力の塊の鉄塊はいったい・・・・？
-		public void openScript()
-		{
-			IntPtr tmphWnd;
 
-			gamehWnd = FindWindowEx(IntPtr.Zero, IntPtr.Zero, "CoreSystem2", IntPtr.Zero);
-
-			tmphWnd = FindWindowEx(IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, "Debug Log");
-			debughWnd = FindWindowEx(tmphWnd, IntPtr.Zero, "ListBox", IntPtr.Zero);
-
-			tmphWnd = FindWindowEx(IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, "Debug Log");
-			filehWnd = FindWindowEx(tmphWnd, IntPtr.Zero, "ListBox", IntPtr.Zero);
-
-			//ゲームディレクトリ取得
-			int processId;
-			GetWindowThreadProcessId(gamehWnd, out processId);
-
-			Process gamePro =  Process.GetProcessById(processId);
-			string filePath = Path.GetDirectoryName(gamePro.MainModule.FileName) + "\\scene\\";
-
-
-			//ファイル名取得
-			int listCount = SendMessage(debughWnd, LB_GETCOUNT, IntPtr.Zero, IntPtr.Zero)-1;
-			if(listCount >= 0 )
-			{ 
-				StringBuilder itemText = new StringBuilder(256);
-				SendMessage(debughWnd, LB_GETTEXT, listCount, itemText);
-				filePath += itemText.ToString().Replace(".cst",".txt");
-				if(filePath.IndexOf(".txt") == -1 ) filePath += ".txt";
-
-				itemText.Clear();
-
-				//メッセージ検索
-				listCount = SendMessage(filehWnd, LB_GETCOUNT, IntPtr.Zero, IntPtr.Zero);
-				int loopC = listCount-1;
-				string mess = "";
-				for( int i = loopC; 0 <= i; i-- )
-				{
-					SendMessage(filehWnd, LB_GETTEXT, i, itemText);
-					mess = itemText.ToString();
-					if( mess.IndexOf( "[message]") != -1 && mess != "[message] ")	break;
-					mess = "";
-				}
-				
-				if( mess == "" ) return;
-
-				mess = mess.Replace( "[message] ","");
-				mess = mess.Replace("\\n", "");
-				mess = mess.Replace("\\@","");
-
-				//秀丸呼び出し
-				ProcessStartInfo pInfo = new ProcessStartInfo();
-				pInfo.FileName = "\"C:\\Program Files (x86)\\Hidemaru\\hidemaru.exe\"";
-				pInfo.Arguments = " /sr,\"" + mess +"\" " + "\"" + filePath + "\"";
-
-				Process.Start(pInfo);
-
-				System.Threading.Thread.Sleep( 100);
-
-			}
-		}
 
 		//-----------------------------------------------------------------------------------
 		//フォームサイズ変更
@@ -918,14 +898,11 @@ namespace GraphicViewer
 				for( int j = 0; j < loopCount2; j++ )
 				{
 					int index = m_tabInfo[i].m_childIndexList[j];
-					//m_tabInfo[i].m_tabList[j] = m_tabList[index];
-					//m_tabInfo[i].m_tabInfoList[j] = m_tabInfo[index];
-					//m_tabInfo[i].m_nodeStateWList[j] = m_nodeStateWList[index];
 					m_tabInfo[i].m_tabInfoList.Add( m_tabInfo[index] );
 					m_tabInfo[i].m_staticIndexList.Add(index);
 					m_tabInfo[i].m_tabList.Add(m_tabList[index]);
 					m_tabInfo[i].m_nodeStateWList.Add(m_nodeStateWList[index]);
-					//m_tabInfo[i].AddChild
+	
 				}
 			}
 		}
@@ -1254,6 +1231,7 @@ namespace GraphicViewer
 		private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
 		{
 			if (treeView1.SelectedNode == null) return;
+			
 
 			m_bigPicPosY = 0;
 
@@ -1798,9 +1776,9 @@ namespace GraphicViewer
 			tabControl1.TabPages.Insert(index,"一時仮タブ名");
 		}
 		
+
 		private void StockNodesState( int tabNo )
 		{
-
 			if( m_nodeStateWList.Count <= tabNo || tabNo == -1 ) return;
 
 			//再帰
@@ -2491,14 +2469,9 @@ namespace GraphicViewer
 			{
 				//タブの移動
 				TreeNode tmptab = m_tabList[m_tabDragDropS_ID];
-				//m_tabList.Remove(m_tabList[m_tabDragDropS_ID]);
-				//
 				CTabStatusInfo tmpTabInfo = m_tabInfo[m_tabDragDropS_ID];
-				//m_tabInfo.Remove(m_tabInfo[m_tabDragDropS_ID]);
-				//
 				List<bool>	openState = m_nodeStateWList[m_tabDragDropS_ID];
-				//m_nodeStateWList.Remove( openState );
-
+				
 				RemoveTab(m_tabDragDropS_ID);
 
 				InsertTab( m_tabDragDropE_ID, tmpTabInfo,tmptab,openState);
@@ -2799,7 +2772,6 @@ namespace GraphicViewer
 		public Color m_strColor;
 
 
-		
 		//フォルダ機能のための変数
 
 		public bool isDirOpen;

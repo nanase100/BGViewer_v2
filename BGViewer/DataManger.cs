@@ -11,31 +11,29 @@ using System.Windows.Forms.VisualStyles;
 using System.Linq;
 
 namespace GraphicViewer
-
-
 {
 	//-----------------------------------------------------------------------------------
 	//
 	//-----------------------------------------------------------------------------------
 	public class DataSet		  //サムネイル1個の最小データ
 	{
-		public string	m_fileName { set; get; }
-		public string	m_summary { set; get; }
-		public bool		m_isExist { set; get; }
-		public string	m_genre { set; get; }
-		public string	m_bigGenre { set; get; }		//まだ未使用のプロパティ
-		public bool		m_isLineFeed { set; get; }		//まだ未使用のプロパティ。改行コード
+		public string	m_fileName		{ set; get; }
+		public string	m_summary		{ set; get; }
+		public bool		m_isExist		{ set; get; }
+		public string	m_genre			{ set; get; }
+		public string	m_bigGenre		{ set; get; }		//まだ未使用のプロパティ
+		public bool		m_isLineFeed	{ set; get; }		//まだ未使用のプロパティ。改行コード
 
-		public int		m_x { set; get; }
-		public	int		m_y { set; get; }
-		public Color	m_summaryColor { set; get; }
-		public string	m_copyStr { set; get; }
+		public int		m_x				{ set; get; }
+		public	int		m_y				{ set; get; }
+		public Color	m_summaryColor	{ set; get; }
+		public string	m_copyStr		{ set; get; }
 
-		public Rectangle m_cutRect { set; get; }
+		public Rectangle m_cutRect		{ set; get; }
 
-		public List<string> m_dirList { set; get; } = new List<string>();
+		public List<string> m_dirList	{ set; get; } = new List<string>();
 
-		public bool m_useBig { set; get; }
+		public bool m_useBig			{ set; get; }
 
 		public DataSet(string fileName, string summary, string genre, bool isLineFeed = false, int x = 0, int y = 0, int w = 0, int h = 0, string copyStr = "", int r = 255, int g = 255, int b = 255, bool isBig = false)
 		{
@@ -44,7 +42,6 @@ namespace GraphicViewer
 			m_genre = genre.Replace("\\", ""); ;
 			m_isLineFeed = isLineFeed;
 			m_summaryColor = Color.FromArgb(r, g, b);
-
 
 			// カンマ区切りで分割して配列に格納する
 			string[] stArrayData = genre.Split('\\');
