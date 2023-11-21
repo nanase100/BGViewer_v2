@@ -21,6 +21,7 @@ namespace GraphicViewer
 		{
 			mainImage		= null;
 			thmbnailImage	= null;
+
 		}
 	}
 

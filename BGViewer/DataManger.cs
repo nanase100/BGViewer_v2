@@ -9,6 +9,7 @@ using System.IO;
 using Newtonsoft.Json;
 using System.Windows.Forms.VisualStyles;
 using System.Linq;
+using System;
 
 namespace GraphicViewer
 {
@@ -496,6 +497,128 @@ namespace GraphicViewer
 			File.WriteAllText(settingFilePath, outputStr);
 
 		}
+
+
+
+
+
+
+
+		public void CreateAuto( string path )
+		{
+			if ( string.IsNullOrEmpty( path )) return;
+
+			//string delPath = System.IO.Path.GetDirectoryName(path) + "\\";
+			string buff = "";
+			string outPut = "";
+			string topDir = path.Replace( System.IO.Path.GetDirectoryName(path) + "\\","");
+
+			//string[] both  = Directory.GetFileSystemEntries( path,"*.*", SearchOption.AllDirectories );
+			//string[] both2  = Directory.GetDirectories( path,"*.*", SearchOption.AllDirectories );
+
+			string[] fileList  = Directory.GetFiles( path,"*.*", SearchOption.AllDirectories );
+			for( int i = 0; i < fileList.Length;i++) fileList[i] = fileList[i].Replace(path+"\\","");
+			
+			string indent = "";
+			List<string> nowDir = new List<string>();
+			string fileNmae = "";
+			using( var fp = new System.IO.StreamWriter("新規のgraphic.txt",false,System.Text.Encoding.GetEncoding("shift_jis")) )
+			{
+				foreach( var str in fileList )
+				{
+					List<string> strDir = str.Split(System.IO.Path.DirectorySeparatorChar).ToList();
+					
+					fileNmae = strDir.Last();
+					strDir.Remove( strDir.Last());
+
+					int loopCount = 0;
+
+					if( nowDir.Count > strDir.Count )
+					{
+						loopCount = nowDir.Count - strDir.Count;
+						for( int inc = 0; inc < loopCount; inc++) strDir.Add("");
+					}
+					if( strDir.Count > nowDir.Count )
+					{
+						loopCount = strDir.Count - nowDir.Count;
+						for( int inc = 0; inc < loopCount; inc++) nowDir.Add("");
+					}
+					
+					//_※を書く位置
+					int difLv = -1;
+
+					for( int i = 0; i < nowDir.Count; i++ )
+					{
+						if(nowDir[i] != strDir[i] )
+						{
+							difLv = i;
+							break;
+						}
+					}
+					if( difLv != -1 )
+					{
+						for( int j = nowDir.Count-1; j >= difLv; j-- )
+						{
+							if(nowDir[j] != "")
+							{
+								indent = new string('	',j);
+								fp.WriteLine( indent + "_※" );
+							}
+						}
+					}
+					if( difLv != -1 )
+					{
+						for( int i = difLv; i < strDir.Count; i++ )
+						{
+							if(strDir[i] != "")
+							{
+								indent = new string('	',i);
+
+								if( strDir[i].IndexOf("(ccp)",StringComparison.OrdinalIgnoreCase)  == -1 )
+								{
+									fp.WriteLine( indent + "※" + strDir[i] );
+								}
+								else
+								{
+									fp.WriteLine( indent + "※" +  Regex.Replace(strDir[i],@"\(ccp\)","",RegexOptions.IgnoreCase) + ":0:0:0:0:#000000:1:1:1:0" );
+									
+									}
+							}
+						}
+					}
+
+					nowDir = strDir;
+
+					while( nowDir.Count != 0 && nowDir.Last() == "" )
+					{
+						nowDir.Remove(nowDir.Last());
+					}
+
+					//
+					outPut = System.IO.Path.Combine(topDir, str);
+					indent = new string('	',nowDir.Count);
+					fp.WriteLine( indent + outPut + ": " );
+				}
+
+				//末尾の後始末
+				for( int i = nowDir.Count-1; i >= 0 ; i-- )
+				{
+					if(nowDir[i] != "" )
+					{
+						indent = new string('	',i);
+						fp.WriteLine( indent + "_※" );
+					}
+				}
+			}
+		}
+
+
+
+
+
+
+
+
 		private static string format_json(string json)
 		{
 			dynamic parsedJson = JsonConvert.DeserializeObject(json);
@@ -506,8 +629,9 @@ namespace GraphicViewer
 		//-----------------------------------------------------------------------------------
 		//
 		//-----------------------------------------------------------------------------------
-		public void Load(string settingFilePath)
+		public void ListLoad(string settingFilePath)
 		{
+
 			string buff = "";
 			string nowGenre = "ジャンル未定";
 			string nowTotalGenre = "";
@@ -851,7 +975,8 @@ namespace GraphicViewer
 						else
 						{
 							htGanreItemCount[nowTotalGenreSplit] = 0;
-							tmpData.m_useBig = true;
+							//強制的に大サイズ立ち絵をonにしてしまっていた。理由がある？
+							//tmpData.m_useBig = true;
 						}
 
 						m_dataMaster.Add(tmpData);

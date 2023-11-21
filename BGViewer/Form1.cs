@@ -236,6 +236,7 @@ namespace GraphicViewer
 			{
 				m_dataManager.SettingLoad("_option.txt", true);
 			}
+			
 
 			//-----------------------------------
 			//タブの色変えのためオーナードロー設定
@@ -347,7 +348,7 @@ namespace GraphicViewer
 			LoadTabChild();
 			UpdateTabNameAll();
 
-
+			pictureBox1.AllowDrop	= true;
 
 			//タブの開閉状態復帰
 			if( File.Exists("tabOption.txt"))
@@ -363,10 +364,9 @@ namespace GraphicViewer
 						int loopCount = record.Length;
 						for( int l = 0; l < loopCount; l++ )
 						{
-							m_nodeStateWList[tabNo][l] = (record[l]=='1');
+							if( m_nodeStateWList.Count > tabNo && m_nodeStateWList[tabNo].Count > l ) m_nodeStateWList[tabNo][l] = (record[l]=='1');
 						}
 						tabNo++;
-					
 					}
 				}
 				FlowNodesState(0);
@@ -492,8 +492,9 @@ namespace GraphicViewer
 
 				DoPaint();
 			}
-
 		}
+
+		
 
 
 
@@ -606,7 +607,12 @@ namespace GraphicViewer
 		private void EnumGraphic()
 		{
 			
-			m_dataManager.Load("graphic.txt");
+			if( System.IO.File.Exists("graphic.txt") == false )
+			{
+				return;
+			}
+
+			m_dataManager.ListLoad("graphic.txt");
 
 			//ツリービュー構築
 			foreach ( GenreTree nowGenre in m_dataManager.m_genreTreeMaster )
@@ -1403,7 +1409,9 @@ namespace GraphicViewer
 				{
 					int strCount = int.Parse(toolStripMenuItem3.Text);
 
-					if (ToolStripMenuItem8.Checked == false) strCount = treeView1.SelectedNode.Text.Length;
+					if (ToolStripMenuItem8.Checked == false){
+						if( treeView1.SelectedNode != null ) strCount = treeView1.SelectedNode.Text.Length;
+					}
 
 					if (ToolStripMenuItem8.Checked && strCount < 0)
 					{
@@ -1411,7 +1419,7 @@ namespace GraphicViewer
 						if (treeView1.SelectedNode.Text.IndexOf("（") != -1) strCount = treeView1.SelectedNode.Text.IndexOf("（");
 					}
 
-					tabControl1.TabPages[i].Text = treeView1.SelectedNode.Text.Substring(0, strCount);
+					if( treeView1.SelectedNode != null ) tabControl1.TabPages[i].Text = treeView1.SelectedNode.Text.Substring(0, strCount);
 				}
 
 				if( m_tabInfo[i].IsParent()==true && m_tabInfo[i].isDirOpen == true ) tabControl1.TabPages[i].Text = "■" + tabControl1.TabPages[i].Text;
@@ -1450,31 +1458,31 @@ namespace GraphicViewer
 
 		private void SetOptionStringNo( int no )
 		{
-			m_receiveFlg		   = true;
-			textBox1.Text		  = m_dataManager.m_optionString[ no ];
-			m_selectOptionStringNo = no;
-			m_receiveFlg		   = false;
+			m_receiveFlg			= true;
+			textBox1.Text			= m_dataManager.m_optionString[ no ];
+			m_selectOptionStringNo	= no;
+			m_receiveFlg			= false;
 
-			m_tabInfo[tabControl1.SelectedIndex].m_tabOpValue = no;
+			if( m_tabInfo.Count > tabControl1.SelectedIndex ) m_tabInfo[tabControl1.SelectedIndex].m_tabOpValue = no;
 		}
 		
 		private void SetSelectOptionStringNo2(int no)
 		{
 			m_selectOptionStringNo2						 = no;
-			m_tabInfo[tabControl1.SelectedIndex].m_tabOpValue2 = no;
+			if( m_tabInfo.Count > tabControl1.SelectedIndex ) m_tabInfo[tabControl1.SelectedIndex].m_tabOpValue2 = no;
 			//m_preSelectSubCopyNo[m_activeTabNo] = no;
 		}
 
 		private void SetSelectOptionStringNo3(int no)
 		{
 			m_selectOptionStringNo3 = no;
-			m_tabInfo[tabControl1.SelectedIndex].m_tabOpValue3 = no;
+			if( m_tabInfo.Count > tabControl1.SelectedIndex ) m_tabInfo[tabControl1.SelectedIndex].m_tabOpValue3 = no;
 		}
 
 		private void SetSelectOptionStringNo4(int no)
 		{
 			m_selectOptionStringNo4 = no;
-			m_tabInfo[tabControl1.SelectedIndex].m_tabOpValue4 = no;
+			if( m_tabInfo.Count > tabControl1.SelectedIndex ) m_tabInfo[tabControl1.SelectedIndex].m_tabOpValue4 = no;
 		}
 
 		private void textBox1_TextChanged(object sender, EventArgs e)
@@ -1874,7 +1882,7 @@ namespace GraphicViewer
 
 			if( m_tabList.Count == 1 ) return;
 
-			if (m_tabList.Count >= index )
+			if (m_tabList.Count > index )
 			{
 				for( int i = 0; i < m_tabInfo.Count; i++ ) 
 				{
@@ -2563,6 +2571,29 @@ namespace GraphicViewer
 			return ret;
 		}
 
+		private void pictureBox1_DragEnter(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetDataPresent(DataFormats.FileDrop))
+			{
+				e.Effect = DragDropEffects.Copy;
+			}
+			else
+			{
+				e.Effect = DragDropEffects.None;
+			}
+		}
+
+		private void pictureBox1_DragDrop(object sender, DragEventArgs e)
+		{
+			// DataFormats.FileDropを与えて、GetDataPresent()メソッドを呼び出す。
+			var files = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+	
+			m_dataManager.CreateAuto(files[0]);
+
+			MessageBox.Show("新規のgraphic.txt の自動作成が完了しました。");
+			
+		}
+
 		public void TabOpenClose( int index )
 		{
 			if( m_tabInfo[index].IsParent() == false ) return;
@@ -2698,6 +2729,8 @@ namespace GraphicViewer
 		//TabControl1のDrawItemイベントハンドラ
 		private void TabControl1_DrawItem(object sender, DrawItemEventArgs e)
 		{
+			if( m_tabInfo.Count <= e.Index ) return;
+
 			//対象のTabControlを取得
 			TabControl tab = (TabControl)sender;
 			//タブページのテキストを取得
