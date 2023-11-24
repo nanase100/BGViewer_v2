@@ -1631,7 +1631,7 @@ namespace GraphicViewer
 		{
 			ReCreateSurface();
 			DoPaint();
-			UpdateCount();			
+			UpdateCount();
 			pictureBox1.Invalidate();
 		}
 
@@ -2898,8 +2898,6 @@ namespace GraphicViewer
 					if( m_childIndexList[i] > index )m_childIndexList[i]--;
 				}
 			}
-
-			
 
 		}
 
